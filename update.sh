@@ -2,7 +2,7 @@
 
 ROOT_DIR="$(pwd)"
 
-while getopts ":cdv-" option; do
+while getopts ":cdv-:" option; do
     case $option in
         -)
             case "${OPTARG}" in
