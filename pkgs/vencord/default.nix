@@ -6,16 +6,17 @@
   Vencord-src,
   buildWebExtension ? false,
 }: let
+  inherit (lib) getExe licenses;
+
   version = "1.9.3";
   gitHash = "5c05443";
-  src = Vencord-src;
 in
   buildNpmPackage {
     pname = "vencord";
     version = "${version}+${gitHash}";
-    inherit src;
+    src = Vencord-src;
 
-    ESBUILD_BINARY_PATH = lib.getExe (esbuild.overrideAttrs (final: _: {
+    ESBUILD_BINARY_PATH = getExe (esbuild.overrideAttrs (final: _: {
       version = "0.15.18";
       src = fetchFromGitHub {
         owner = "evanw";
@@ -55,7 +56,7 @@ in
         cp -r dist/ $out
       '';
 
-    meta = with lib; {
+    meta = {
       description = "Vencord web extension";
       homepage = "https://github.com/Vendicated/Vencord";
       license = licenses.gpl3Only;

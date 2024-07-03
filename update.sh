@@ -1,10 +1,28 @@
 #!/usr/bin/env -S nix develop .#update -c bash
 
-COMMIT="$1"
 ROOT_DIR="$(pwd)"
 
+while getopts ":cdv-" option; do
+    case $option in
+        -)
+            case "${OPTARG}" in
+                commit) COMMIT="true";;
+                discord) UPDATE_DISCORD="true";;
+                vencord) UPDATE_VENCORD="true";;
+                *) echo "Error: Invalid option"; exit 1;;
+            esac
+            ;;
+
+        c) COMMIT="true";;
+        d) UPDATE_DISCORD="true";;
+        v) UPDATE_VENCORD="true";;
+        \?) echo "Error: Invalid option"; exit 1;;
+    esac
+done
+
+
 git_push() {
-    if [[ "$COMMIT" == "--commit" ]]; then
+    if [[ "$COMMIT" == "true" ]]; then
         (
             cd "$ROOT_DIR" || return
             git config --global user.name 'Updater'
@@ -23,7 +41,13 @@ git_push() {
 }
 
 updateDiscord() {
-    update="$(eval "$(nix build .#packages.x86_64-linux.discord-"$1".updateScript --print-out-paths --no-link)")"
+    branch="$1"
+
+    echo "Updating Discord-$branch"
+
+    update="$(eval "$(
+        nix build .#packages.x86_64-linux.discord-"$branch".updateScript --print-out-paths --no-link
+    )")"
 
     if [[ "$update" != "" ]]; then
         git_push "ci: $update"
@@ -31,10 +55,11 @@ updateDiscord() {
 }
 
 updateVencord() {
+    echo "Updating Vencord"
+
     nix flake update
 
     pkgDir=./pkgs/vencord
-
     tempDir=$(mktemp -d)
 
     ghTags=$(curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} "https://api.github.com/repos/Vendicated/Vencord/tags")
@@ -44,18 +69,23 @@ updateVencord() {
     pushd "$tempDir"
     curl "https://raw.githubusercontent.com/Vendicated/Vencord/$gitHash/package.json" -o package.json
     npm install --legacy-peer-deps -f
-
     npmDepsHash=$(prefetch-npm-deps ./package-lock.json)
     popd
+    cp "$tempDir/package-lock.json" "$pkgDir/package-lock.json"
 
     sed -i 's/^  version = ".*";/  version = "'"${latestTag#v}"'";/' "$pkgDir/default.nix"
     sed -E 's#\bgitHash = ".*?"#gitHash = "'"${gitHash:0:7}"'"#' -i "$pkgDir/default.nix"
     sed -E 's#\bnpmDepsHash = ".*?"#npmDepsHash = "'"$npmDepsHash"'"#' -i "$pkgDir/default.nix"
-    cp "$tempDir/package-lock.json" "$pkgDir/package-lock.json"
 }
 
-updateVencord
-updateDiscord "stable"
-updateDiscord "canary"
-updateDiscord "development"
-updateDiscord "ptb"
+
+if [[ "$UPDATE_VENCORD" == "true" ]]; then
+    updateVencord
+fi
+
+if [[ "$UPDATE_DISCORD" == "true" ]]; then
+    updateDiscord "stable"
+    updateDiscord "canary"
+    updateDiscord "development"
+    updateDiscord "ptb"
+fi
