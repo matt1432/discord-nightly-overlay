@@ -6,6 +6,13 @@
       repo = "nixpkgs";
       ref = "nixos-unstable";
     };
+
+    Vencord-src = {
+      type = "github";
+      owner = "Vendicated";
+      repo = "vencord";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -36,11 +43,14 @@
         packages = with pkgs; [
           alejandra
           bash
+          curl
           git
           jq
           nix-prefetch-git
           nix-prefetch-github
           nix-prefetch-scripts
+          nodejs
+          prefetch-npm-deps
         ];
       };
     });

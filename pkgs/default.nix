@@ -3,11 +3,23 @@
   self,
   system,
   ...
-}: {
-  discord = self.packages.${system}.discord-stable;
+}: let
+  inherit (pkgs.lib) listToAttrs nameValuePair;
 
-  discord-canary = pkgs.callPackage ./discord/default.nix {branch = "canary";};
-  discord-development = pkgs.callPackage ./discord/default.nix {branch = "development";};
-  discord-ptb = pkgs.callPackage ./discord/default.nix {branch = "ptb";};
-  discord-stable = pkgs.callPackage ./discord/default.nix {branch = "stable";};
-}
+  branches = ["stable" "canary" "ptb" "development"];
+  mkDiscordPkg = branch:
+    nameValuePair
+    "discord-${branch}" ((import ./discord {
+        inherit (pkgs) callPackage fetchurl lib stdenv;
+        inherit branch;
+      })
+      .override {
+        inherit (self.packages.${system}) vencord;
+      });
+in
+  {
+    discord = self.packages.${system}.discord-stable;
+
+    vencord = pkgs.callPackage ./vencord {inherit (self.inputs) Vencord-src;};
+  }
+  // listToAttrs (map mkDiscordPkg branches)
