@@ -34,7 +34,16 @@
       perSystem (system: pkgs:
         import ./pkgs {inherit self system pkgs;});
 
-    overlays.default = final: prev: self.packages.${final.system};
+    overlays.default = final: prev: {
+      inherit
+        (self.packages.${final.system})
+        discord
+        discord-canary
+        discord-ptb
+        discord-development
+        vencord
+        ;
+    };
 
     formatter = perSystem (_: pkgs: pkgs.alejandra);
 
