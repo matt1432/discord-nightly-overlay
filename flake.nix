@@ -13,36 +13,20 @@
     nixpkgs,
     ...
   }: let
-    supportedSystems = [
-      "x86_64-linux"
-      "x86_64-darwin"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ];
+    # TODO: too lazy to support darwin
+    supportedSystems = ["x86_64-linux"];
 
     perSystem = attrs:
       nixpkgs.lib.genAttrs supportedSystems (system:
-        attrs system nixpkgs.legacyPackages.${system});
+        attrs system (import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        }));
   in {
     packages =
       perSystem (system: pkgs:
         import ./pkgs {inherit self system pkgs;});
 
     formatter = perSystem (_: pkgs: pkgs.alejandra);
-
-    devShells = perSystem (_: pkgs: {
-      update = pkgs.mkShell {
-        packages = with pkgs; [
-          alejandra
-          bash
-          common-updater-scripts
-          git
-          jq
-          nix-prefetch-git
-          nix-prefetch-github
-          nix-prefetch-scripts
-        ];
-      };
-    });
   };
 }
