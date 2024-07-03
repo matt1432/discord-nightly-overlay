@@ -27,6 +27,7 @@
       nixpkgs.lib.genAttrs supportedSystems (system:
         attrs system (import nixpkgs {
           inherit system;
+          # All the Discord packages are unfree binaries
           config.allowUnfree = true;
         }));
   in {
@@ -54,6 +55,7 @@
           bash
           curl
           git
+          gnugrep
           jq
           nix-prefetch-git
           nix-prefetch-github

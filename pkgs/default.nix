@@ -6,7 +6,13 @@
 }: let
   inherit (pkgs.lib) listToAttrs nameValuePair;
 
-  branches = ["stable" "canary" "ptb" "development"];
+  branches = [
+    "stable"
+    "canary"
+    "ptb"
+    "development"
+  ];
+
   mkDiscordPkg = branch:
     nameValuePair
     "discord-${branch}" ((import ./discord {

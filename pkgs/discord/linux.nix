@@ -57,6 +57,7 @@
   speechd,
   wayland,
   branch,
+  system ? null,
   withOpenASAR ? false,
   openasar,
   withVencord ? false,
@@ -199,36 +200,39 @@ in
     passthru = {
       # make it possible to run disableBreakingUpdates standalone
       inherit disableBreakingUpdates;
-      updateScript = writeScript "discord-update-script" ''
-        #!/usr/bin/env nix-shell
-        #!nix-shell -i bash -p curl gnugrep jq
-        set -eou pipefail;
+      updateScript =
+        writeScript "discord-update-script"
+        # bash
+        ''
+          #!/usr/bin/env -S nix develop .#update -c bash
 
-        srcFile=./pkgs/discord/srcs.nix
-        old_version="$(nix eval --json --file "$srcFile" | jq -r .[\"x86_64-linux\"].${branch}.version)"
+          set -eou pipefail;
 
-        url=$(curl -sI "https://discordapp.com/api/download/${
-          builtins.replaceStrings ["discord-" "discord"] ["" "stable"] pname
-        }?platform=linux&format=tar.gz" | grep -oP 'location: \K\S+')
+          srcFile=./pkgs/discord/srcs.nix
+          old_version="$(nix eval --json --file "$srcFile" | jq -r .[\"${system}\"].${branch}.version)"
 
-        version=''${url##https://dl*.discordapp.net/apps/linux/}
-        version=''${version%%/*.tar.gz}
+          url=$(curl -sI "https://discordapp.com/api/download/${
+            builtins.replaceStrings ["discord-" "discord"] ["" "stable"] pname
+          }?platform=linux&format=tar.gz" | grep -oP 'location: \K\S+')
 
-        if [[ "$old_version" != "$version" ]]; then
-            hash="$(nix store prefetch-file --refresh --json \
-                --hash-type sha256 "$url" --name "escaped" | jq -r .hash)"
+          version=''${url##https://dl*.discordapp.net/apps/linux/}
+          version=''${version%%/*.tar.gz}
 
-            number=$(sed -n -e '/${branch}/{=;q;}' "$srcFile")
-            number=$(($number + 1))
+          if [[ "$old_version" != "$version" ]]; then
+              hash="$(nix store prefetch-file --refresh --json \
+                  --hash-type sha256 "$url" --name "escaped" | jq -r .hash)"
 
-            sed -i "$number""s/\".*\"/\"$version\"/" "$srcFile"
+              number=$(sed -n -e '/${branch}/{=;q;}' "$srcFile")
+              number=$(($number + 1))
 
-            number=$(($number + 2))
+              sed -i "$number""s/\".*\"/\"$version\"/" "$srcFile"
 
-            sed -i "$number""s,\".*\",\"$hash\"," "$srcFile"
+              number=$(($number + 2))
 
-            echo "discord-${branch} $old_version -> $version"
-        fi
-      '';
+              sed -i "$number""s,\".*\",\"$hash\"," "$srcFile"
+
+              echo "discord-${branch} $old_version -> $version"
+          fi
+        '';
     };
   }
