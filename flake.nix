@@ -27,6 +27,8 @@
       perSystem (system: pkgs:
         import ./pkgs {inherit self system pkgs;});
 
+    overlays.default = final: prev: self.packages.${final.system};
+
     formatter = perSystem (_: pkgs: pkgs.alejandra);
 
     devShells = perSystem (_: pkgs: {
