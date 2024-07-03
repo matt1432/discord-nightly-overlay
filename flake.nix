@@ -28,5 +28,19 @@
         import ./pkgs {inherit self system pkgs;});
 
     formatter = perSystem (_: pkgs: pkgs.alejandra);
+
+    devShells = perSystem (_: pkgs: {
+      update = pkgs.mkShell {
+        packages = with pkgs; [
+          alejandra
+          bash
+          git
+          jq
+          nix-prefetch-git
+          nix-prefetch-github
+          nix-prefetch-scripts
+        ];
+      };
+    });
   };
 }

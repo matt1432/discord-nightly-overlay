@@ -205,6 +205,7 @@ in
         set -eou pipefail;
 
         srcFile=./pkgs/discord/srcs.nix
+        old_version="$(nix eval --json --file "$srcFile" | jq -r .[\"x86_64-linux\"].${branch}.version)"
 
         url=$(curl -sI "https://discordapp.com/api/download/${
           builtins.replaceStrings ["discord-" "discord"] ["" "stable"] pname
@@ -213,17 +214,21 @@ in
         version=''${url##https://dl*.discordapp.net/apps/linux/}
         version=''${version%%/*.tar.gz}
 
-        hash="$(nix store prefetch-file --refresh --json \
-            --hash-type sha256 "$url" --name "escaped" | jq -r .hash)"
+        if [[ "$old_version" != "$version" ]]; then
+            hash="$(nix store prefetch-file --refresh --json \
+                --hash-type sha256 "$url" --name "escaped" | jq -r .hash)"
 
-        number=$(sed -n -e '/${branch}/{=;q;}' "$srcFile")
-        number=$(($number + 1))
+            number=$(sed -n -e '/${branch}/{=;q;}' "$srcFile")
+            number=$(($number + 1))
 
-        sed -i "$number""s/\".*\"/\"$version\"/" "$srcFile"
+            sed -i "$number""s/\".*\"/\"$version\"/" "$srcFile"
 
-        number=$(($number + 2))
+            number=$(($number + 2))
 
-        sed -i "$number""s,\".*\",\"$hash\"," "$srcFile"
+            sed -i "$number""s,\".*\",\"$hash\"," "$srcFile"
+
+            echo "discord-${branch} $old_version -> $version"
+        fi
       '';
     };
   }
