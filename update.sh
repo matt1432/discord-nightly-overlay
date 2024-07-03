@@ -57,10 +57,13 @@ updateDiscord() {
 updateVencord() {
     echo "Updating Vencord"
 
-    nix flake update
-
     pkgDir=./pkgs/vencord
     tempDir=$(mktemp -d)
+
+    oldGitHash=$(jq -r '.nodes["Vencord-src"].locked.rev' < ./flake.lock)
+    oldTag=$(sed -n 's/^  version = "\(.*\)";/\1/p' "$pkgDir/default.nix")
+
+    nix flake update
 
     ghTags=$(curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} "https://api.github.com/repos/Vendicated/Vencord/tags")
     latestTag=$(echo "$ghTags" | jq -r .[0].name)
@@ -71,11 +74,23 @@ updateVencord() {
     npm install --legacy-peer-deps -f
     npmDepsHash=$(prefetch-npm-deps ./package-lock.json)
     popd
+
+    oldPkgLock="$(sha256sum "$pkgDir/package-lock.json")"
+    newPkgLock="$(sha256sum "$tempDir/package-lock.json")"
     cp "$tempDir/package-lock.json" "$pkgDir/package-lock.json"
 
     sed -i 's/^  version = ".*";/  version = "'"${latestTag#v}"'";/' "$pkgDir/default.nix"
     sed -E 's#\bgitHash = ".*?"#gitHash = "'"${gitHash:0:7}"'"#' -i "$pkgDir/default.nix"
     sed -E 's#\bnpmDepsHash = ".*?"#npmDepsHash = "'"$npmDepsHash"'"#' -i "$pkgDir/default.nix"
+
+    # Commit msg
+    if [[ "$oldGitHash" != "$gitHash" ]]; then
+        git_push "ci: vencord $oldTag+$oldGitHash -> $latestTag+$gitHash"
+    elif [[ "$oldPkgLock" != "$newPkgLock" ]]; then
+        git_push "ci: bumped vencord npm deps"
+    else
+        echo "Vencord already up to date"
+    fi
 }
 
 
