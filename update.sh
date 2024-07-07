@@ -57,18 +57,33 @@ updateDiscord() {
 updateVencord() {
     echo "Updating Vencord"
 
+    # Location stuff
     pkgDir=./pkgs/vencord
     tempDir=$(mktemp -d)
 
+
+    # Current versions to compare update
     oldGitHash=$(jq -r '.nodes["Vencord-src"].locked.rev' < ./flake.lock)
+    oldGitHash=${oldGitHash:0:7}
+
     oldTag=$(sed -n 's/^  version = "\(.*\)";/\1/p' "$pkgDir/default.nix")
 
+
+    # Get latest Vencord-src
     nix flake update
 
-    ghTags=$(curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} "https://api.github.com/repos/Vendicated/Vencord/tags")
-    latestTag=$(echo "$ghTags" | jq -r .[0].name)
-    gitHash=$(jq -r '.nodes["Vencord-src"].locked.rev' < ./flake.lock)
 
+    # Check new versions
+    ghTags=$(curl ${GITHUB_TOKEN:+" -u \":$GITHUB_TOKEN\""} "https://api.github.com/repos/Vendicated/Vencord/tags")
+
+    latestTag=$(echo "$ghTags" | jq -r .[0].name)
+    latestTag=${latestTag#v}
+
+    gitHash=$(jq -r '.nodes["Vencord-src"].locked.rev' < ./flake.lock)
+    gitHash=${gitHash:0:7}
+
+
+    # Update npmDepsHash
     pushd "$tempDir"
     curl "https://raw.githubusercontent.com/Vendicated/Vencord/$gitHash/package.json" -o package.json
     npm install --legacy-peer-deps -f
@@ -79,9 +94,12 @@ updateVencord() {
     newPkgLock="$(sha256sum "$tempDir/package-lock.json")"
     cp "$tempDir/package-lock.json" "$pkgDir/package-lock.json"
 
-    sed -i 's/^  version = ".*";/  version = "'"${latestTag#v}"'";/' "$pkgDir/default.nix"
-    sed -E 's#\bgitHash = ".*?"#gitHash = "'"${gitHash:0:7}"'"#' -i "$pkgDir/default.nix"
+
+    # Replace values in default.nix
+    sed -i 's/^  version = ".*";/  version = "'"$latestTag"'";/' "$pkgDir/default.nix"
+    sed -E 's#\bgitHash = ".*?"#gitHash = "'"$gitHash"'"#' -i "$pkgDir/default.nix"
     sed -E 's#\bnpmDepsHash = ".*?"#npmDepsHash = "'"$npmDepsHash"'"#' -i "$pkgDir/default.nix"
+
 
     # Commit msg
     if [[ "$oldGitHash" != "$gitHash" ]]; then
