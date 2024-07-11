@@ -3,11 +3,11 @@
     "Vencord-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1720284193,
-        "narHash": "sha256-i7UqEjdV6+keocA8jkZsLYKEYew8luJqYn7CS5cgF7w=",
+        "lastModified": 1720596783,
+        "narHash": "sha256-uZQkPqIYcy7ESnCADR7lpjNQL3C1tcqZcgpwioDbb5o=",
         "owner": "Vendicated",
         "repo": "vencord",
-        "rev": "02092a985c2f95f2f265387a849db8cec95742a8",
+        "rev": "9f8c7494216b3d5aadb8d3fec14fa5ac7d8f448a",
         "type": "github"
       },
       "original": {
@@ -18,11 +18,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1720418205,
-        "narHash": "sha256-cPJoFPXU44GlhWg4pUk9oUPqurPlCFZ11ZQPk21GTPU=",
+        "lastModified": 1720542800,
+        "narHash": "sha256-ZgnNHuKV6h2+fQ5LuqnUaqZey1Lqqt5dTUAiAnqH0QQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "655a58a72a6601292512670343087c2d75d859c1",
+        "rev": "feb2849fdeb70028c70d73b848214b00d324a497",
         "type": "github"
       },
       "original": {
