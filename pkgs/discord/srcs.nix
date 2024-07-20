@@ -19,9 +19,9 @@
     };
 
     development = rec {
-      version = "0.0.22";
+      version = "0.0.24";
       url = "https://dl-development.discordapp.net/apps/linux/${version}/discord-development-${version}.tar.gz";
-      hash = "sha256-dSoi/YZra8SRbV1rvbtKkyHmhfTb+A6mja8zZ9Y5JNo=";
+      hash = "sha256-rSlGL2BwtUxLJltSD2Ms94qmZ4kuX5i9jFqyYC30jyQ=";
     };
   };
 }
