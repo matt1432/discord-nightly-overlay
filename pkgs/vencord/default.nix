@@ -31,7 +31,7 @@ in
     npmRebuildFlags = ["|| true"];
 
     makeCacheWritable = true;
-    npmDepsHash = "sha256-Dt02E8cDuDVHG8MQXKBKOoBqeK/zvsznGbB+xjJjoag=";
+    npmDepsHash = "sha256-2CCYBg3cZL01rmXkiVguemPDP+u/umbeoa8hgXQpMCU=";
     npmFlags = ["--legacy-peer-deps"];
     npmBuildScript =
       if buildWebExtension
