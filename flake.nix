@@ -25,15 +25,15 @@
 
     perSystem = attrs:
       nixpkgs.lib.genAttrs supportedSystems (system:
-        attrs system (import nixpkgs {
+        attrs (import nixpkgs {
           inherit system;
           # All the Discord packages are unfree binaries
           config.allowUnfree = true;
         }));
   in {
     packages =
-      perSystem (system: pkgs:
-        import ./pkgs {inherit self system pkgs;});
+      perSystem (pkgs:
+        import ./pkgs {inherit self pkgs;});
 
     overlays.default = final: prev: {
       inherit
@@ -46,9 +46,9 @@
         ;
     };
 
-    formatter = perSystem (_: pkgs: pkgs.alejandra);
+    formatter = perSystem (pkgs: pkgs.alejandra);
 
-    devShells = perSystem (_: pkgs: {
+    devShells = perSystem (pkgs: {
       update = pkgs.mkShell {
         packages = with pkgs; [
           alejandra

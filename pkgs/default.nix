@@ -1,7 +1,6 @@
 {
   pkgs,
   self,
-  system,
   ...
 }: let
   inherit (pkgs.lib) listToAttrs nameValuePair;
@@ -20,11 +19,11 @@
         inherit branch;
       })
       .override {
-        inherit (self.packages.${system}) vencord;
+        inherit (self.packages.${pkgs.system}) vencord;
       });
 in
   {
-    discord = self.packages.${system}.discord-stable;
+    discord = self.packages.${pkgs.system}.discord-stable;
 
     vencord = pkgs.callPackage ./vencord {inherit (self.inputs) Vencord-src;};
   }
