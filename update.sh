@@ -90,8 +90,6 @@ updateVencord() {
     npmDepsHash=$(prefetch-npm-deps ./package-lock.json)
     popd
 
-    oldPkgLock="$(sha256sum "$pkgDir/package-lock.json")"
-    newPkgLock="$(sha256sum "$tempDir/package-lock.json")"
     cp "$tempDir/package-lock.json" "$pkgDir/package-lock.json"
 
 
@@ -104,10 +102,9 @@ updateVencord() {
     # Commit msg
     if [[ "$oldGitHash" != "$gitHash" ]]; then
         git_push "ci: vencord $oldTag+$oldGitHash -> $latestTag+$gitHash"
-    elif [[ "$oldPkgLock" != "$newPkgLock" ]]; then
-        git_push "ci: bumped vencord npm deps"
     else
         echo "Vencord already up to date"
+        git restore "$ROOT_DIR"
     fi
 }
 
