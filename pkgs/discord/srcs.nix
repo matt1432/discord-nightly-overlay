@@ -7,9 +7,9 @@
     };
 
     ptb = rec {
-      version = "0.0.100";
+      version = "0.0.101";
       url = "https://dl-ptb.discordapp.net/apps/linux/${version}/discord-ptb-${version}.tar.gz";
-      hash = "sha256-+pIdulAeI2ExpK281BbxQCayYtCwVnKB0+hgiUpsMv8=";
+      hash = "sha256-JesxPoYybVLVwTrDwG2kO6Pikq7qvn7CO8j+24dwjBc=";
     };
 
     canary = rec {
