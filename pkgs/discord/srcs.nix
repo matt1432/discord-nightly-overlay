@@ -1,9 +1,9 @@
 {
   x86_64-linux = {
     stable = rec {
-      version = "0.0.66";
+      version = "0.0.67";
       url = "https://dl.discordapp.net/apps/linux/${version}/discord-${version}.tar.gz";
-      hash = "sha256-tbpo1+fbziJk2JdaMyAW5Ynb0wuWkLdcDnzQbiZJ47A=";
+      hash = "sha256-L8COdPP4SFRO+1mipjn4tjLR+xShcJbT/72yhNHdSWg=";
     };
 
     ptb = rec {
