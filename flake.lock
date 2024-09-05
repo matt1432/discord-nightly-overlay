@@ -3,11 +3,11 @@
     "Vencord-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1725252856,
-        "narHash": "sha256-0NPKSPWgQj9wxiXw4ukc8UALqqupNAMxOeqFAoxEn40=",
+        "lastModified": 1725496540,
+        "narHash": "sha256-fYLTaxNeixaHP19dS+BPVJwv/xXEV5hmmE2ob7jzS/A=",
         "owner": "Vendicated",
         "repo": "vencord",
-        "rev": "accfc15125c5a611cb5835815a6e36d6bd4e8f89",
+        "rev": "8890c8c6b4201121c559e671e0110b45937467c2",
         "type": "github"
       },
       "original": {
