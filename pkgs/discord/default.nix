@@ -1,3 +1,4 @@
+# Adapted to Nixpkgs f0d832e36f08c8481b7f6d4098664cfeb1fcaa43
 {
   branch ? "stable",
   callPackage,
