@@ -54,7 +54,7 @@
   python3,
   runCommand,
   libunity,
-  speechd,
+  speechd-minimal,
   wayland,
   branch,
   system ? null,
@@ -142,7 +142,7 @@ in
         libdbusmenu
         wayland
       ]
-      ++ lib.optional withTTS speechd);
+      ++ lib.optional withTTS speechd-minimal);
 
     installPhase = ''
       runHook preInstall
@@ -218,7 +218,7 @@ in
           version=''${url##https://dl*.discordapp.net/apps/linux/}
           version=''${version%%/*.tar.gz}
 
-          if [[ "$old_version" != "$version" ]]; then
+          if [[ "$old_version" != "$version" && "$version" != 'https:' ]]; then
               hash="$(nix store prefetch-file --refresh --json \
                   --hash-type sha256 "$url" --name "escaped" | jq -r .hash)"
 
