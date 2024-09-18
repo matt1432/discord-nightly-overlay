@@ -13,9 +13,9 @@
     };
 
     canary = rec {
-      version = "0.0.489";
+      version = "0.0.490";
       url = "https://dl-canary.discordapp.net/apps/linux/${version}/discord-canary-${version}.tar.gz";
-      hash = "sha256-H9Ha9bw1GVQmssRxqjolT9xfDedEtEVwmUWsIo8tOi4=";
+      hash = "sha256-vH7XXHlAy1hclbsZCy3X3/yQgpELyL5q2GTGhM1idUc=";
     };
 
     development = rec {
