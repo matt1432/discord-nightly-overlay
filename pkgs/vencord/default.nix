@@ -8,8 +8,8 @@
 }: let
   inherit (lib) getExe licenses;
 
-  version = "1.10.4";
-  gitHash = "013c8d0";
+  version = "1.10.5";
+  gitHash = "e620431";
 in
   buildNpmPackage {
     pname = "vencord";
@@ -31,7 +31,7 @@ in
     npmRebuildFlags = ["|| true"];
 
     makeCacheWritable = true;
-    npmDepsHash = "sha256-PzjV/BUkcSRh9nhRsIOAFDtrGnuyVho/UYv3eEO/OcA=";
+    npmDepsHash = "sha256-0ctlHYtx3t/VONXelLndmcvLFMG/WuubHY/V+bUwcQ0=";
     npmFlags = ["--legacy-peer-deps"];
     npmBuildScript =
       if buildWebExtension
