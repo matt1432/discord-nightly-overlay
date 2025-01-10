@@ -9,7 +9,7 @@
   inherit (lib) getExe licenses;
 
   version = "1.10.9";
-  gitHash = "5a77149";
+  gitHash = "3243120";
 in
   buildNpmPackage {
     pname = "vencord";
